@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;">
+    <meta name="apple-mobile-web-app-capable"  content="yes"> <!--删除苹果默认的工具栏和菜单栏-->
+    <meta  name="apple-mobile-web-app-status-bar-style" content="black" >  <!--设置苹果工具栏颜色-->
+    <meta name="format-detection" content="telephone=no,email=no">  <!--忽略页面中的数字识别为电话，email-->
+    <title>dialog</title>
+    <link href="css/objMain.css" rel="stylesheet">
+</head>
+<body>
+<div class="dialog_1 btn">没有传递任何参数</div>
+<div class="dialog_2 btn">弹出没有任何按钮的框，2s后关闭</div>
+<div class="dialog_3 btn">弹出一个有确认和取消的按钮，点击按钮关闭</div>
+<div class="dialog_4 btn">弹出一个有确认按钮，点击按钮不关闭</div>
+<div class="dialog_5 btn">弹出一个多组合的按钮匡，按钮样式可定制</div>
+<div class="dialog_6 btn">弹出一个有确认和取消的按钮，点击确认按钮弹出加载框2s后关闭，点击删除按钮上一次框关闭</div>
+
+<div class="dialog_area">
+    <div class="dialog">
+        <div class="dialog_header">wwww</div>
+        <div class="dialog_content">确定。。。。吗</div>
+        <div class="dialog_footer">
+            <button>确定</button>
+            <button>取消</button>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+<script src="js/jquery.js"></script>
+<script src="js/toObj.js"></script>
