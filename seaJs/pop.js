@@ -14,11 +14,11 @@ define(function (require, exports, module) {
             footerButtons: [
                 {
                     btnText: '确定',
-                    callBack: function () {
+                    callback: function () {
                     }
                 }, {
                     btnText: '取消',
-                    callBack: function () {
+                    callback: function () {
                     }
                 }
             ],
@@ -54,7 +54,8 @@ define(function (require, exports, module) {
                     break;
                 // 自定义按钮
                 case 'dialog':
-                    that.createButtons();
+                    var buttons = this.cfg.footerButtons;
+                    that.createButtons(buttons);
                     break;
             }
             this.boundingBox = $(
@@ -159,8 +160,24 @@ define(function (require, exports, module) {
             return this;
         },
         //自定义按钮处理
-        createButtons:function () {
-
+        createButtons:function (buttons) {
+            var that = this;
+            var str = '';
+            $(buttons).each(function (key,value) {
+                var text = value.btnText?value.btnText:'按钮'+i;
+                var callback = value.callback?value.callback:null;
+                var button =  '<div>'+ text +'</div>';
+                if(callback){
+                    $(button).on('click',function () {
+                        callback();
+                        that.destroy()
+                    })
+                }else{
+                    that.destroy()
+                }
+                str += button
+            });
+            this.cfg.footerContent = str;
         }
     });
     module.exports = {
