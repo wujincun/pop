@@ -6,11 +6,11 @@ define(function (require, exports, module) {
 
     function Pop() {
         this.cfg = {
-            width: '500',
-            height: '500',
+            width: '250',
+            height: '250',
             titleContent: '',
             content: '',
-            footerContent:null,
+            footerContent:'',
             footerButtons: [
                 {
                     btnText: '确定',
@@ -27,7 +27,9 @@ define(function (require, exports, module) {
             handler4SureBtn: null,
             handler4CancelBtn: null,
             hasMask: true,
-            hasCloseBtn: false,
+            maskClick: true,
+            hasCloseBtn: true,
+            handler4CloseBtn: null,
             skinClassName: false,
             hasAnimate: {
                 animateName: null,
@@ -38,6 +40,7 @@ define(function (require, exports, module) {
 
     Pop.prototype = $.extend({}, new widget.Widget(), {
         renderUI: function () {
+            var that = this;
             switch (this.cfg.winType) {
                 //一个确定按钮
                 case 'alert':
@@ -51,12 +54,7 @@ define(function (require, exports, module) {
                     break;
                 // 自定义按钮
                 case 'dialog':
-                    var str = '';
-                    var buttons = this.cfg.footerButtons;
-                    for (var i = 0; i < buttons.length; i++) {
-                        str += '<div onClick=' + buttons[i].callBack + '>' + buttons[i].btnText + '</div>'
-                    }
-                    this.cfg.footerContent = str;
+                    that.createButtons();
                     break;
             }
             this.boundingBox = $(
@@ -74,9 +72,17 @@ define(function (require, exports, module) {
                 this.mask = $('<div class="pop-mask"></div>');
                 this.mask.appendTo($('body'));
             }
-            if (this.cfg.closeBtn) {
+            if (this.cfg.hasCloseBtn) {
                 var closeBtn = $('<div class="pop-closeBtn">X</div>');
                 closeBtn.appendTo(this.boundingBox)
+            }
+            if (this.cfg.hasAnimate) {
+                this.cfg.hasAnimate.animateName && this.boundingBox.addClass(this.cfg.hasAnimate.animateName);
+                if (this.cfg.hasAnimate.animateDuration) {
+                    setTimeout(function () {
+                        that.destroy.apply(that);
+                    }, this.cfg.hasAnimate.animateDuration);
+                }
             }
         },
         bindUI: function () {
@@ -91,24 +97,29 @@ define(function (require, exports, module) {
                 that.fire('cancel');
                 that.destroy();
             });
-            this.cfg.handler4SureBtn && this.cfg.handler4SureBtn();
-            this.cfg.handler4CancelBtn && this.cfg.handler4CancelBtn();
-            this.cfg.handler4ShareBtn && this.cfg.handler4ShareBtn();
-            if (this.cfg.hasAnimate) {
-                this.boundingBox.addClass(this.cfg.hasAnimate.animateName);
-                if (this.cfg.hasAnimate.animateDuration) {
-                    setTimeout(function () {
-                        that.destroy.apply(that);
-                    }, this.cfg.hasAnimate.animateDuration);
-                }
+            if(this.cfg.handler4SureBtn){
+                this.on('sure',this.cfg.handler4SureBtn);//观察者模式写法,
+            }
+            if(this.cfg.handler4CancelBtn){
+                this.on('cancel',this.cfg.handler4CancelBtn)
+            }
+            if(this.cfg.handler4CloseBtn){
+                this.on('close',this.cfg.handler4CloseBtn)
+            }
+            if(this.cfg.maskClick){
+                this.mask.on('click',function () {
+                    that.destroy();
+                })
             }
         },
         initUI: function () {
+            var winWidth = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || document.body.clientWidth;
+            var winHeight = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || document.body.clientHeight;
             this.boundingBox.css({
                 width: this.cfg.width + 'px',
                 height: this.cfg.height + 'px',
-                left: (this.cfg.x || (window.innerWidth - this.cfg.width) / 2) + 'px',
-                top: (this.cfg.y || (window.innerHeight - this.cfg.width) / 2) + 'px'
+                left: (this.cfg.x || (winWidth - this.cfg.width) / 2) + 'px',
+                top: (this.cfg.y || (winHeight - this.cfg.height) / 2) + 'px'
             });
             if (this.cfg.skinClassName) {
                 this.boundingBox.addClass(this.cfg.skinClassName);
@@ -146,6 +157,10 @@ define(function (require, exports, module) {
             $.extend(this.cfg, cfg, {winType: "common"});
             this.render();
             return this;
+        },
+        //自定义按钮处理
+        createButtons:function () {
+
         }
     });
     module.exports = {
