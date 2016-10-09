@@ -41,21 +41,26 @@ define(function (require, exports, module) {
     Pop.prototype = $.extend({}, new widget.Widget(), {
         renderUI: function () {
             var that = this;
-            switch (this.cfg.winType) {
+            switch (that.cfg.winType) {
                 //一个确定按钮
                 case 'alert':
-                    this.cfg.footerContent = '<div class="pop-footer"><div class="pop-sureBtn">' + this.cfg.text4SureBtn + '</div></div> ';
+                    that.cfg.footerContent = '<div class="pop-footer"><div class="pop-sureBtn">' + that.cfg.text4SureBtn + '</div></div> ';
                     break;
                 // 两个按钮：确定，取消
                 case 'confirm':
-                    this.cfg.footerContent =
-                        '<div class="pop-sureBtn">' + this.cfg.text4SureBtn + '</div>' +
-                        '<div class="pop-cancelBtn">' + this.cfg.text4CancelBtn + '</div>';
+                    that.cfg.footerContent =
+                        '<div class="pop-sureBtn">' + that.cfg.text4SureBtn + '</div>' +
+                        '<div class="pop-cancelBtn">' + that.cfg.text4CancelBtn + '</div>';
                     break;
                 // 自定义按钮
                 case 'dialog':
-                    var buttons = this.cfg.footerButtons;
-                    that.createButtons(buttons);
+                    var buttons = that.cfg.footerButtons;
+                    var str = '';
+                    $(buttons).each(function (key,value) {
+                        var text = value.btnText?value.btnText:'按钮'+i;
+                        str +=  '<div class="'+ text + '">'+ text +'</div>';
+                    });
+                    that.cfg.footerContent = str;
                     break;
             }
             this.boundingBox = $(
@@ -112,6 +117,31 @@ define(function (require, exports, module) {
                     that.destroy();
                 })
             }
+            if(this.cfg.winType == 'dialog' && this.cfg.footerButtons.length >= 0){
+                var $btns = $()
+                if(callback){
+                    that.boundingBox.on('click', $thisBtn ,function () {
+                        callback();
+                        that.destroy()
+                    })
+                }else{
+                    that.destroy()
+                }
+                /*var buttons = that.cfg.footerButtons;
+                $(buttons).each(function (key,value) {
+                    var callback = value.callback?value.callback:null;
+                    var $thisBtn  = $('.'+ value.btnText) || '按钮'+ i;//测试按钮i
+                    if(callback){
+                        that.boundingBox.on('click', $thisBtn ,function () {
+                            callback();
+                            that.destroy()
+                        })
+                    }else{
+                        that.destroy()
+                    }
+                });*/
+            }
+            
         },
         initUI: function () {
             var winWidth = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || document.body.clientWidth;
@@ -168,7 +198,7 @@ define(function (require, exports, module) {
                 var callback = value.callback?value.callback:null;
                 var button =  '<div>'+ text +'</div>';
                 if(callback){
-                    $(button).on('click',function () {
+                    $(value).on('click',function () {
                         callback();
                         that.destroy()
                     })
