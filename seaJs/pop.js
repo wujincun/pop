@@ -57,8 +57,8 @@ define(function (require, exports, module) {
                     var buttons = that.cfg.footerButtons;
                     var str = '';
                     $(buttons).each(function (key,value) {
-                        var text = value.btnText?value.btnText:'按钮'+i;
-                        str +=  '<div class="'+ text + '">'+ text +'</div>';
+                        var text = value.btnText?value.btnText:'按钮'+(++i);
+                        str +=  '<div class="button '+ text + '">'+ text +'</div>';
                     });
                     that.cfg.footerContent = str;
                     break;
@@ -118,30 +118,20 @@ define(function (require, exports, module) {
                 })
             }
             if(this.cfg.winType == 'dialog' && this.cfg.footerButtons.length >= 0){
-                var $btns = $()
-                if(callback){
-                    that.boundingBox.on('click', $thisBtn ,function () {
-                        callback();
-                        that.destroy()
-                    })
-                }else{
-                    that.destroy()
-                }
-                /*var buttons = that.cfg.footerButtons;
-                $(buttons).each(function (key,value) {
-                    var callback = value.callback?value.callback:null;
-                    var $thisBtn  = $('.'+ value.btnText) || '按钮'+ i;//测试按钮i
-                    if(callback){
-                        that.boundingBox.on('click', $thisBtn ,function () {
-                            callback();
-                            that.destroy()
-                        })
-                    }else{
-                        that.destroy()
-                    }
-                });*/
+                var footerButtonsArr = this.cfg.footerButtons;
+                that.boundingBox.on('click', '.pop-footer .button' ,function () {
+                    var claName = $(this).attr('class').replace(/button\s/g,'');
+                    $(footerButtonsArr).each(function (key,value) {
+                        var arrName = value.btnText;
+                        if(claName == arrName){
+                            value.callback();
+                            that.destroy();
+                            return false
+                        }
+                    });
+                });
+                //还没有考虑不传参数btnText：‘按钮1’、‘按钮2’的情况
             }
-            
         },
         initUI: function () {
             var winWidth = window.innerWidth || (document.documentElement && document.documentElement.clientWidth) || document.body.clientWidth;
@@ -188,13 +178,13 @@ define(function (require, exports, module) {
             $.extend(this.cfg, cfg, {winType: "common"});
             this.render();
             return this;
-        },
+        }
         //自定义按钮处理
-        createButtons:function (buttons) {
+        /*createButtons:function (buttons) {
             var that = this;
             var str = '';
             $(buttons).each(function (key,value) {
-                var text = value.btnText?value.btnText:'按钮'+i;
+                var text = value.btnText?value.btnText:'按钮'+(++i);
                 var callback = value.callback?value.callback:null;
                 var button =  '<div>'+ text +'</div>';
                 if(callback){
@@ -208,7 +198,7 @@ define(function (require, exports, module) {
                 str += button
             });
             this.cfg.footerContent = str;
-        }
+        }*/
     });
     module.exports = {
         Pop: Pop
